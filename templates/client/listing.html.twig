@@ -1,0 +1,51 @@
+{# One page for every way in: the taxa pressed, the period, the kind shown; then sequences, cards, resources. #}
+{% extends 'layout1.html.twig' %}
+{% set what = level ? (level.label ~ (subject ? ' · ' ~ subject.label)) : (subject ? subject.label : (purpose ? purpose.label : ('@classroom.listing.' ~ kind)|trans)) %}
+{% block title %}{{ what }}{% endblock %}
+{% block stylesheets %}{{ parent() }}<link rel="stylesheet" href="{{ asset('bundles/classroom/css/classroom.css') }}">{% endblock %}
+
+{% block content %}
+<section class="classroom classroom-listing">
+    <header class="classroom-head"><div>
+        <p class="classroom-eyebrow"><a href="{{ path('classroom_index') }}">{{ '@classroom.index.title'|trans }}</a>{% if level and level.parent %} › {{ level.parent.label }}{% endif %}</p>
+        <h1>{{ what }}</h1>
+        {% set description = level and not subject ? level.description : (subject ? subject.description : (purpose ? purpose.description : null)) %}
+        {% if description %}<p class="classroom-lead">{{ description }}</p>{% endif %}
+    </div></header>
+
+    <nav class="classroom-filters" aria-label="{{ '@classroom.listing.filters'|trans }}">
+        {% if level %}
+        <div class="classroom-pills"><span class="classroom-filter-label">{{ '@classroom.listing.subject'|trans }}</span>
+            <a class="classroom-pill" href="{{ path('classroom_level', {level: level.slug}) }}" {{ not subject ? 'aria-current="page"' }}>{{ '@classroom.listing.all'|trans }}</a>
+            {% for s in subjects %}<a class="classroom-pill is-subject" style="--pill: {{ s.color ?: 'var(--classroom-accent, #b5411f)' }}" href="{{ path('classroom_level', {level: level.slug, subject: s.slug}) }}" {{ subject and subject.slug == s.slug ? 'aria-current="page"' }}>{{ s.label }}</a>{% endfor %}
+        </div>
+        {% elseif subject %}
+        <div class="classroom-pills"><span class="classroom-filter-label">{{ '@classroom.listing.level'|trans }}</span>
+            <a class="classroom-pill" href="{{ path('classroom_subject', {subject: subject.slug}) }}" aria-current="page">{{ '@classroom.listing.multilevel'|trans }}</a>
+            {% for l in levels %}<a class="classroom-pill is-level" style="--pill: {{ l.color ?: 'var(--classroom-accent, #b5411f)' }}" href="{{ path('classroom_level', {level: l.slug, subject: subject.slug}) }}">{{ l.short }}</a>{% endfor %}
+        </div>
+        {% endif %}
+        <div class="classroom-pills"><span class="classroom-filter-label">{{ '@classroom.listing.period'|trans }}</span>
+            <a class="classroom-pill" href="{{ path(route, params|merge({voir: kind == 'all' ? null : kind})) }}" {{ not period ? 'aria-current="page"' }}>{{ '@classroom.listing.whole_year'|trans }}</a>
+            {% for p in periods %}<a class="classroom-pill" href="{{ path(route, params|merge({periode: p.value, voir: kind == 'all' ? null : kind})) }}" {{ period == p ? 'aria-current="page"' }}>P{{ p.number }}</a>{% endfor %}
+        </div>
+        <div class="classroom-pills"><span class="classroom-filter-label">{{ '@classroom.listing.show'|trans }}</span>
+            {% for k in ['all', 'sequences', 'cards', 'resources'] %}<a class="classroom-pill" href="{{ path(route, params|merge({periode: period ? period.value : null, voir: k == 'all' ? null : k})) }}" {{ kind == k ? 'aria-current="page"' }}>{{ ('@classroom.listing.' ~ k)|trans }}</a>{% endfor %}
+        </div>
+    </nav>
+
+    {% if sequences %}
+    <div class="classroom-section"><h2>{{ '@classroom.listing.sequences'|trans }}</h2>
+        <div class="classroom-grid">{% for sequence in sequences %}{% include '@Classroom/client/_sequence_card.html.twig' %}{% endfor %}</div>
+        {% if sequences_pages > 1 %}<nav class="classroom-pager">{% if page > 1 %}<a href="{{ path(route, params|merge({page: page - 1 > 1 ? page - 1 : null, voir: 'sequences'})) }}">‹</a>{% endif %}<span>{{ page }} / {{ sequences_pages }}</span>{% if page < sequences_pages %}<a href="{{ path(route, params|merge({page: page + 1, voir: 'sequences'})) }}">›</a>{% endif %}</nav>{% endif %}
+    </div>
+    {% endif %}
+    {% if cards %}
+    <div class="classroom-section"><h2>{{ '@classroom.listing.cards'|trans }}</h2><div class="classroom-grid is-cards">{% for card in cards %}{% include '@Classroom/client/_card.html.twig' %}{% endfor %}</div></div>
+    {% endif %}
+    {% if resources %}
+    <div class="classroom-section"><h2>{{ '@classroom.listing.resources'|trans }}</h2><div class="classroom-grid is-resources">{% for resource in resources %}{% include '@Classroom/client/_resource_card.html.twig' %}{% endfor %}</div></div>
+    {% endif %}
+    {% if not sequences and not cards and not resources %}<p class="classroom-empty">{{ '@classroom.listing.empty'|trans }}</p>{% endif %}
+</section>
+{% endblock %}

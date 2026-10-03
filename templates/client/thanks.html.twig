@@ -1,0 +1,35 @@
+{#
+ # The page of a paid order's files (EventSubscriber\QuickOrderFilesListener):
+ # reached by its signed link, right after the payment or from the mail. Not
+ # paid yet - the provider has not said so - it asks again by itself.
+ #}
+{% extends 'layout1.html.twig' %}
+{% block title %}{{ '@classroom.shop.thanks.title'|trans }}{% endblock %}
+{% block stylesheets %}{{ parent() }}<link rel="stylesheet" href="{{ asset('bundles/classroom/css/classroom.css') }}">{% if not order.paid and not order.cancelled %}<meta http-equiv="refresh" content="4">{% endif %}{% endblock %}
+
+{% block content %}
+<section class="classroom classroom-thanks">
+    {% if order.paid %}
+    <p class="classroom-eyebrow">{{ '@classroom.shop.thanks.reference'|trans({reference: order.reference}) }}</p>
+    <h1>{{ '@classroom.shop.thanks.title'|trans }}</h1>
+    <p class="classroom-lead">{{ '@classroom.shop.thanks.lead'|trans({count: files|length}) }}</p>
+    <ul class="classroom-files">
+        {% for file in files %}
+        <li>
+            <span class="classroom-card-ext" aria-hidden="true">{{ file.resource.extension|upper }}</span>
+            <span class="classroom-files-name"><b>{{ file.resource.title }}</b><small>{{ file.resource.extension|upper }}{% if file.resource.size %} · {{ file.resource.size|classroom_size }}{% endif %}</small></span>
+            <a class="classroom-button" href="{{ file.url }}" data-transparent-ignore><i class="fa-solid fa-download" aria-hidden="true"></i> {{ '@classroom.resource.download'|trans }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% if order.customer %}<p class="classroom-note">{{ '@classroom.shop.thanks.mailed'|trans({email: order.customer.email}) }}</p>{% endif %}
+    {% elseif order.cancelled %}
+    <h1>{{ '@classroom.shop.thanks.cancelled'|trans }}</h1>
+    <p><a class="classroom-button" href="{{ path('classroom_shop') }}">{{ '@classroom.shop.back'|trans }}</a></p>
+    {% else %}
+    <h1>{{ '@classroom.shop.thanks.waiting'|trans }}</h1>
+    <p class="classroom-lead">{{ '@classroom.shop.thanks.waiting_note'|trans }}</p>
+    {% endif %}
+    <p><a href="{{ path('classroom_shop') }}">{{ '@classroom.shop.back'|trans }}</a></p>
+</section>
+{% endblock %}

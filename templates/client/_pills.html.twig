@@ -1,0 +1,3 @@
+{# The levels and subjects of a thing, as pills. #}
+{% for level in thing.levels %}<a class="classroom-pill is-level is-small" style="--pill: {{ level.color ?: 'var(--classroom-accent, #b5411f)' }}" href="{{ path('classroom_level', {level: level.slug}) }}">{{ level.short }}</a>{% endfor %}
+{% for subject in thing.subjects %}<a class="classroom-pill is-subject is-small" style="--pill: {{ subject.color ?: 'var(--classroom-accent, #b5411f)' }}" href="{{ path('classroom_subject', {subject: subject.slug}) }}">{{ subject.label }}</a>{% endfor %}

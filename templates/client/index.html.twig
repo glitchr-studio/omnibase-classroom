@@ -1,0 +1,41 @@
+{# The classroom's door: the levels by cycle, the subjects, "pour la classe", the latest sequences and cards. #}
+{% extends 'layout1.html.twig' %}
+{% block title %}{{ '@classroom.index.tab'|trans }}{% endblock %}
+{% block description %}{{ '@classroom.index.lead'|trans }}{% endblock %}
+{% block stylesheets %}{{ parent() }}<link rel="stylesheet" href="{{ asset('bundles/classroom/css/classroom.css') }}">{% endblock %}
+
+{% block content %}
+<section class="classroom">
+    <header class="classroom-head"><div><p class="classroom-eyebrow">{{ '@classroom.index.eyebrow'|trans }}</p><h1>{{ '@classroom.index.title'|trans }}</h1><p class="classroom-lead">{{ '@classroom.index.lead'|trans }}</p></div>
+        <form class="classroom-search" action="{{ path('classroom_search') }}" method="get" role="search"><input type="search" name="q" minlength="3" placeholder="{{ '@classroom.search.placeholder'|trans }}" aria-label="{{ '@classroom.search.placeholder'|trans }}"><button type="submit" aria-label="{{ '@classroom.search.go'|trans }}"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button></form>
+    </header>
+
+    <div class="classroom-doors">
+        {% for cycle in cycles %}
+        <div class="classroom-door">
+            <h2>{{ cycle.label }}</h2>
+            <div class="classroom-pills">{% for level in cycle.children %}<a class="classroom-pill is-level" style="--pill: {{ level.color ?: 'var(--classroom-accent, #b5411f)' }}" href="{{ path('classroom_level', {level: level.slug}) }}">{{ level.short }}</a>{% endfor %}</div>
+        </div>
+        {% endfor %}
+        <div class="classroom-door">
+            <h2>{{ '@classroom.index.subjects'|trans }}</h2>
+            <div class="classroom-pills">{% for subject in subjects %}<a class="classroom-pill is-subject" style="--pill: {{ subject.color ?: 'var(--classroom-accent, #b5411f)' }}" href="{{ path('classroom_subject', {subject: subject.slug}) }}">{% if subject.icon %}<i class="{{ subject.icon }}" aria-hidden="true"></i> {% endif %}{{ subject.label }}</a>{% endfor %}</div>
+        </div>
+        {% if purposes %}
+        <div class="classroom-door">
+            <h2>{{ '@classroom.index.purposes'|trans }}</h2>
+            <div class="classroom-pills">{% for purpose in purposes %}<a class="classroom-pill" href="{{ path('classroom_purpose', {purpose: purpose.slug}) }}">{% if purpose.icon %}<i class="{{ purpose.icon }}" aria-hidden="true"></i> {% endif %}{{ purpose.label }}</a>{% endfor %}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if sequences %}
+    <div class="classroom-section"><div class="classroom-section-head"><h2>{{ '@classroom.index.latest_sequences'|trans }}</h2><a href="{{ path('classroom_sequences') }}">{{ '@classroom.index.all_sequences'|trans }} ›</a></div>
+        <div class="classroom-grid">{% for sequence in sequences %}{% include '@Classroom/client/_sequence_card.html.twig' %}{% endfor %}</div></div>
+    {% endif %}
+    {% if cards %}
+    <div class="classroom-section"><div class="classroom-section-head"><h2>{{ '@classroom.index.cards'|trans }}</h2><a href="{{ path('classroom_cards') }}">{{ '@classroom.index.all_cards'|trans }} ›</a></div>
+        <div class="classroom-grid is-cards">{% for card in cards %}{% include '@Classroom/client/_card.html.twig' %}{% endfor %}</div></div>
+    {% endif %}
+</section>
+{% endblock %}

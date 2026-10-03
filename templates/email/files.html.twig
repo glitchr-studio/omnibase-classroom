@@ -1,0 +1,15 @@
+{# The mail of a paid order: the link of the page where its files are downloaded. #}
+<!doctype html>
+<html lang="{{ app.request ? app.request.locale|slice(0, 2) : 'fr' }}">
+<body style="margin:0;padding:24px;background:#f6f4ee;font-family:Helvetica,Arial,sans-serif;color:#1c2b3a;">
+<table role="presentation" width="100%" style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:12px;"><tr><td style="padding:28px;">
+    <h1 style="margin:0 0 12px;font-size:22px;">{{ '@classroom.shop.mail.title'|trans }}</h1>
+    <p style="margin:0 0 16px;line-height:1.5;">{{ '@classroom.shop.mail.text'|trans({reference: order.reference}) }}</p>
+    <ul style="margin:0 0 20px;padding-left:20px;line-height:1.6;">
+        {% for resource in resources %}<li>{{ resource.title }}</li>{% endfor %}
+    </ul>
+    <p style="margin:0 0 20px;"><a href="{{ link }}" style="display:inline-block;padding:12px 20px;border-radius:8px;background:#1f4e8c;color:#ffffff;text-decoration:none;font-weight:bold;">{{ '@classroom.shop.mail.button'|trans }}</a></p>
+    <p style="margin:0;font-size:13px;color:#66727f;line-height:1.5;">{{ '@classroom.shop.mail.note'|trans }}</p>
+</td></tr></table>
+</body>
+</html>

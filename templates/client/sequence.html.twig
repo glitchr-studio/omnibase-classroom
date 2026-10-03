@@ -1,0 +1,65 @@
+{# A sequence: its frame (levels, subjects, period, duration, objectives, competences, material), its presentation, its sessions folded, its resources, the comments when omnibase/blog is there. #}
+{% extends 'layout1.html.twig' %}
+{% block title %}{{ sequence.title }}{% endblock %}
+{% block description %}{{ sequence.excerpt ?? sequence.headline ?? '' }}{% endblock %}
+{% block stylesheets %}{{ parent() }}<link rel="stylesheet" href="{{ asset('bundles/classroom/css/classroom.css') }}">{% endblock %}
+
+{% block content %}
+<article class="classroom classroom-sequence">
+    <header class="classroom-head"><div>
+        <p class="classroom-eyebrow"><a href="{{ path('classroom_sequences') }}">{{ '@classroom.listing.sequences'|trans }}</a></p>
+        <p class="classroom-card-pills">{% include '@Classroom/client/_pills.html.twig' with {thing: sequence} %}{% if sequence.period %}<span class="classroom-pill is-small">{{ '@classroom.sequence.period'|trans({number: sequence.period.number}) }}</span>{% endif %}</p>
+        <h1>{{ sequence.title }}</h1>
+        {% if sequence.headline %}<p class="classroom-lead">{{ sequence.headline }}</p>{% endif %}
+    </div></header>
+
+    <div class="classroom-sequence-grid">
+        <div class="classroom-sequence-main">
+            {% if sequence.cover %}<figure class="classroom-cover"><img src="{{ sequence.cover }}" alt=""></figure>{% endif %}
+            {% if sequence.content %}<div class="classroom-prose">{{ sequence.content|wysiwyg|raw }}</div>{% endif %}
+            {% include '@Classroom/client/_embeds.html.twig' with {thing: sequence} %}
+
+            {% if sessions %}
+            <h2 id="seances">{{ '@classroom.sequence.sessions_title'|trans({count: sessions|length}) }}</h2>
+            <ol class="classroom-sessions">
+                {% for session in sessions %}
+                <li><details class="classroom-session" id="seance-{{ session.position }}" {{ loop.first ? 'open' }}>
+                    <summary><span class="classroom-session-number">{{ session.position }}</span><span class="classroom-session-title">{{ session.title }}{% if session.headline %}<small>{{ session.headline }}</small>{% endif %}</span>{% if session.durationMinutes %}<span class="classroom-session-time">{{ session.durationMinutes|classroom_minutes }}</span>{% endif %}</summary>
+                    <div class="classroom-session-body">
+                        {% if session.materials %}<p class="classroom-session-materials"><b>{{ '@classroom.sequence.materials'|trans }} :</b> {{ session.materials|join(', ') }}</p>{% endif %}
+                        <div class="classroom-prose">{{ session.content|wysiwyg|raw }}</div>
+                    </div>
+                </details></li>
+                {% endfor %}
+            </ol>
+            {% endif %}
+
+            {% if sequence.resources|length %}
+            <h2 id="ressources">{{ '@classroom.sequence.resources_title'|trans }}</h2>
+            <div class="classroom-grid is-resources">{% for resource in sequence.resources|filter(r => r.published) %}{% include '@Classroom/client/_resource_card.html.twig' %}{% endfor %}</div>
+            {% endif %}
+
+            {# Comments under the sequence, when omnibase/blog is installed: its visitors' book, keyed to this page. #}
+            {% block sequence_comments %}{% endblock %}
+        </div>
+        <aside class="classroom-sequence-aside">
+            <div class="classroom-frame">
+                <h2>{{ '@classroom.sequence.frame'|trans }}</h2>
+                <dl>
+                    {% if sequence.levels %}<dt>{{ '@classroom.sequence.levels'|trans }}</dt><dd>{{ sequence.levelsLabel }}{% if sequence.multiLevel %} <small>({{ '@classroom.listing.multilevel'|trans|lower }})</small>{% endif %}</dd>{% endif %}
+                    {% if sequence.subjects %}<dt>{{ '@classroom.sequence.subjects'|trans }}</dt><dd>{{ sequence.subjects|map(s => s.label)|join(', ') }}</dd>{% endif %}
+                    {% if sequence.period %}<dt>{{ '@classroom.sequence.when'|trans }}</dt><dd>{{ '@classroom.sequence.period'|trans({number: sequence.period.number}) }}</dd>{% endif %}
+                    {% if sequence.durationMinutes %}<dt>{{ '@classroom.sequence.duration'|trans }}</dt><dd>{{ sequence.durationMinutes|classroom_minutes }} · {{ '@classroom.sequence.sessions'|trans({count: sessions|length}) }}</dd>{% endif %}
+                </dl>
+                {% if sequence.objectives %}<h3>{{ '@classroom.sequence.objectives'|trans }}</h3><ul>{% for o in sequence.objectives %}<li>{{ o }}</li>{% endfor %}</ul>{% endif %}
+                {% if sequence.competences %}<h3>{{ '@classroom.sequence.competences'|trans }}</h3><ul>{% for c in sequence.competences %}<li>{{ c }}</li>{% endfor %}</ul>{% endif %}
+                {% if sequence.materials %}<h3>{{ '@classroom.sequence.materials'|trans }}</h3><p>{{ sequence.materials|nl2br }}</p>{% endif %}
+                {% if sequence.owners|length %}<p class="classroom-byline">{{ '@classroom.sequence.by'|trans({name: sequence.owners|first, date: sequence.publishedAt|format_date('long')}) }}</p>{% endif %}
+            </div>
+            {% if related %}
+            <div class="classroom-frame"><h2>{{ '@classroom.sequence.related'|trans }}</h2><ul class="classroom-related">{% for r in related %}<li><a href="{{ path('classroom_sequence', {slug: r.slug}) }}">{{ r.title }}</a> <small>{{ r.levelsLabel }}</small></li>{% endfor %}</ul></div>
+            {% endif %}
+        </aside>
+    </div>
+</article>
+{% endblock %}

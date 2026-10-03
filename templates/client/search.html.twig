@@ -1,0 +1,14 @@
+{% extends 'layout1.html.twig' %}
+{% block title %}{{ '@classroom.search.title'|trans({term: term}) }}{% endblock %}
+{% block stylesheets %}{{ parent() }}<link rel="stylesheet" href="{{ asset('bundles/classroom/css/classroom.css') }}">{% endblock %}
+{% block content %}
+<section class="classroom classroom-search-page">
+    <header class="classroom-head"><div><p class="classroom-eyebrow">{{ '@classroom.search.eyebrow'|trans }}</p><h1>{{ term ? '@classroom.search.title'|trans({term: term}) : '@classroom.search.placeholder'|trans }}</h1></div>
+        <form class="classroom-search" action="{{ path('classroom_search') }}" method="get" role="search"><input type="search" name="q" value="{{ term }}" minlength="3" placeholder="{{ '@classroom.search.placeholder'|trans }}" aria-label="{{ '@classroom.search.placeholder'|trans }}"><button type="submit" aria-label="{{ '@classroom.search.go'|trans }}"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button></form>
+    </header>
+    {% if sequences %}<div class="classroom-section"><h2>{{ '@classroom.listing.sequences'|trans }}</h2><div class="classroom-grid">{% for sequence in sequences %}{% include '@Classroom/client/_sequence_card.html.twig' %}{% endfor %}</div></div>{% endif %}
+    {% if cards %}<div class="classroom-section"><h2>{{ '@classroom.listing.cards'|trans }}</h2><div class="classroom-grid is-cards">{% for card in cards %}{% include '@Classroom/client/_card.html.twig' %}{% endfor %}</div></div>{% endif %}
+    {% if resources %}<div class="classroom-section"><h2>{{ '@classroom.listing.resources'|trans }}</h2><div class="classroom-grid is-resources">{% for resource in resources %}{% include '@Classroom/client/_resource_card.html.twig' %}{% endfor %}</div></div>{% endif %}
+    {% if term|length >= 3 and not sequences and not cards and not resources %}<p class="classroom-empty">{{ '@classroom.search.empty'|trans({term: term}) }}</p>{% endif %}
+</section>
+{% endblock %}

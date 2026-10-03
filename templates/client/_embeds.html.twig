@@ -1,0 +1,20 @@
+{#
+ # What the teacher made elsewhere, framed on the page (glitchr/omnibase's embed_url()):
+ # a Canva design, a Padlet board, a video, an exercise. A link no provider
+ # is known for stays a link.
+ #}
+{% if thing.embeds %}
+<div class="classroom-embeds">
+    {% for embed in thing.embeds %}
+        {% set frame = embed_url(embed.url) %}
+        {% if frame and frame.src %}
+        <figure class="classroom-embed is-{{ frame.provider }}">
+            <div class="classroom-embed-frame" style="{{ frame.height ? 'height: ' ~ frame.height ~ 'px' : 'aspect-ratio: ' ~ frame.ratio }}"><iframe src="{{ frame.src }}" title="{{ embed.label ?: frame.provider|capitalize }}" loading="lazy" allowfullscreen allow="fullscreen; clipboard-write" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+            <figcaption>{% if embed.label %}{{ embed.label }} · {% endif %}<a href="{{ embed.url }}" target="_blank" rel="noopener">{{ (frame.known ? '@classroom.embed.open.' ~ frame.provider : '@classroom.embed.open.other')|trans }}</a></figcaption>
+        </figure>
+        {% else %}
+        <p class="classroom-embed-link"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> <a href="{{ embed.url }}" target="_blank" rel="noopener">{{ embed.label ?: embed.url }}</a></p>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endif %}

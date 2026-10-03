@@ -1,0 +1,9 @@
+<article class="classroom-card is-sequence">
+    {% if sequence.cover %}<a class="classroom-card-cover" href="{{ path('classroom_sequence', {slug: sequence.slug}) }}"><img src="{{ sequence.cover }}" alt="" loading="lazy"></a>{% endif %}
+    <div class="classroom-card-body">
+        <p class="classroom-card-pills">{% include '@Classroom/client/_pills.html.twig' with {thing: sequence} %}{% if sequence.period %}<span class="classroom-pill is-small">P{{ sequence.period.number }}</span>{% endif %}</p>
+        <h3><a href="{{ path('classroom_sequence', {slug: sequence.slug}) }}">{{ sequence.title }}</a></h3>
+        {% if sequence.headline %}<p class="classroom-card-line">{{ sequence.headline }}</p>{% endif %}
+        <p class="classroom-card-meta">{{ '@classroom.sequence.sessions'|trans({count: sequence.sessions|length}) }}{% if sequence.durationMinutes %} · {{ sequence.durationMinutes|classroom_minutes }}{% endif %}{% if sequence.resources|length %} · {{ '@classroom.sequence.resources_count'|trans({count: sequence.resources|length}) }}{% endif %}</p>
+    </div>
+</article>

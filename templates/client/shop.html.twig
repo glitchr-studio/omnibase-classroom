@@ -1,0 +1,51 @@
+{#
+ # The shop: the files for sale, one card each - what it is, its format, its
+ # price - and under each the quick order (omnibase/marketplace): an e-mail
+ # address, the payment. No account, no basket.
+ #}
+{% extends 'layout1.html.twig' %}
+{% block title %}{{ '@classroom.shop.title'|trans }}{% endblock %}
+{% block stylesheets %}{{ parent() }}<link rel="stylesheet" href="{{ asset('bundles/classroom/css/classroom.css') }}"><link rel="stylesheet" href="{{ asset('bundles/marketplace/css/marketplace.css') }}">{% endblock %}
+
+{% block content %}
+<section class="classroom classroom-shop">
+    <header class="classroom-head"><div>
+        <p class="classroom-eyebrow">{{ '@classroom.shop.eyebrow'|trans }}</p>
+        <h1>{{ '@classroom.shop.title'|trans }}</h1>
+        <p class="classroom-lead">{{ '@classroom.shop.lead'|trans }}</p>
+    </div></header>
+
+    {% for message in app.flashes('error') %}<p class="classroom-flash is-error">{{ message }}</p>{% endfor %}
+
+    <ol class="classroom-shop-steps">
+        <li><b>1</b> {{ '@classroom.shop.steps.choose'|trans }}</li>
+        <li><b>2</b> {{ '@classroom.shop.steps.pay'|trans }}</li>
+        <li><b>3</b> {{ '@classroom.shop.steps.download'|trans }}</li>
+    </ol>
+
+    {% if offers %}
+    <div class="classroom-shop-grid">
+        {% for offer in offers %}
+        {% set resource = offer.resource %}
+        <article class="classroom-offer" id="offre-{{ offer.slug }}">
+            <a class="classroom-offer-cover{{ resource.preview ? '' : ' is-blank' }}" href="{{ path('classroom_resource', {slug: resource.slug}) }}">
+                {% if resource.preview %}<img src="{{ resource.preview }}" alt="" loading="lazy">{% else %}<span class="classroom-card-ext" aria-hidden="true">{{ resource.extension|upper }}</span>{% endif %}
+                <span class="classroom-offer-price">{% include '@Marketplace/client/_price.html.twig' with {amount: offer.unitPrice, currency: offer.currency} %}</span>
+            </a>
+            <div class="classroom-offer-body">
+                <p class="classroom-card-pills">{% include '@Classroom/client/_pills.html.twig' with {thing: resource} %}</p>
+                <h2><a href="{{ path('classroom_resource', {slug: resource.slug}) }}">{{ offer.title ?: resource.title }}</a></h2>
+                <p class="classroom-offer-text">{{ offer.excerpt ?: resource.description }}</p>
+                <p class="classroom-card-meta">{{ resource.extension|upper }}{% if resource.size %} · {{ resource.size|classroom_size }}{% endif %}</p>
+                {% include '@Marketplace/client/_quick_order.html.twig' with {product: offer, back: path('classroom_shop') ~ '#offre-' ~ offer.slug} %}
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="classroom-empty">{{ '@classroom.shop.empty'|trans }}</p>
+    {% endif %}
+
+    <p class="classroom-note classroom-shop-foot">{{ '@classroom.shop.free'|trans({resources: path('classroom_resources')})|raw }}</p>
+</section>
+{% endblock %}

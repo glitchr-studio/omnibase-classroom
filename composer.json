@@ -1,0 +1,27 @@
+{
+    "name": "omnibase/classroom",
+    "description": "A teacher's open classroom for omnibase: levels and subjects, learning sequences and their sessions, idea cards, resources to download (free, for members, or sold through omnibase/marketplace).",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "authors": [{"name": "Marco Meyer", "email": "marco.meyer@glitchr.io"}],
+    "require": {
+        "php": "^8.2",
+        "doctrine/orm": "^2.15|^3.0",
+        "glitchr/omnibase": "3.0.*-dev",
+        "omnibase/admin": "dev-main",
+        "phpoffice/phpspreadsheet": "^1.23|^2.0|^3.0|^4.0|^5.0",
+        "symfony/config": "^6.0|^7.0|^8.0",
+        "symfony/dependency-injection": "^6.0|^7.0|^8.0",
+        "symfony/form": "^6.0|^7.0|^8.0",
+        "symfony/http-kernel": "^6.0|^7.0|^8.0",
+        "symfony/security-bundle": "^6.0|^7.0|^8.0"
+    },
+    "suggest": {
+        "omnibase/marketplace": "Sells resources: a ResourceOffer is a product, paid it entitles the buyer to the download.",
+        "omnibase/blog": "Comments under a sequence."
+    },
+    "autoload": {"psr-4": {"Base\\Classroom\\": "./src"}},
+    "autoload-dev": {"psr-4": {"Base\\Classroom\\Tests\\": "./tests"}},
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

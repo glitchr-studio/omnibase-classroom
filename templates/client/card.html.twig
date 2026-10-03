@@ -1,0 +1,26 @@
+{# An idea card opened: the picture large, the text, the links; the previous and next cards of the fan. #}
+{% extends 'layout1.html.twig' %}
+{% block title %}{{ card.title }}{% endblock %}
+{% block description %}{{ card.headline ?? '' }}{% endblock %}
+{% block stylesheets %}{{ parent() }}<link rel="stylesheet" href="{{ asset('bundles/classroom/css/classroom.css') }}">{% endblock %}
+
+{% block content %}
+<article class="classroom classroom-one-card" style="--card: {{ card.color ?: 'var(--classroom-accent, #b5411f)' }}">
+    <p class="classroom-eyebrow"><a href="{{ path('classroom_cards') }}">{{ '@classroom.listing.cards'|trans }}</a></p>
+    <div class="classroom-one-card-grid">
+        <figure class="classroom-one-card-picture" style="view-transition-name: card-{{ card.id }}">{% if card.image %}<img src="{{ card.image }}" alt="">{% else %}<span class="classroom-card-blank" aria-hidden="true"></span>{% endif %}{% if card.icon %}<i class="{{ card.icon }} classroom-card-icon is-large{{ card.image ? ' is-badge' }}" aria-hidden="true"></i>{% endif %}</figure>
+        <div>
+            <p class="classroom-card-pills">{% include '@Classroom/client/_pills.html.twig' with {thing: card} %}</p>
+            <h1 style="view-transition-name: card-title-{{ card.id }}">{{ card.title }}</h1>
+            {% if card.headline %}<p class="classroom-lead">{{ card.headline }}</p>{% endif %}
+            <div class="classroom-prose">{{ card.content|wysiwyg|raw }}</div>
+            {% include '@Classroom/client/_embeds.html.twig' with {thing: card} %}
+            {% if card.links %}<ul class="classroom-links">{% for link in card.links %}<li><a href="{{ link.url }}" {{ link.url starts with 'http' and not (link.url starts with app.request.schemeAndHttpHost) ? 'rel="noopener" target="_blank"' }}>{{ link.label ?: link.url }} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></li>{% endfor %}</ul>{% endif %}
+        </div>
+    </div>
+    <nav class="classroom-neighbours" aria-label="{{ '@classroom.card.neighbours'|trans }}">
+        {% if previous %}<a rel="prev" href="{{ path('classroom_card', {slug: previous.slug}) }}">‹ {{ previous.title }}</a>{% else %}<span></span>{% endif %}
+        {% if next %}<a rel="next" href="{{ path('classroom_card', {slug: next.slug}) }}">{{ next.title }} ›</a>{% endif %}
+    </nav>
+</article>
+{% endblock %}

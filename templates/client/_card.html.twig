@@ -1,0 +1,8 @@
+<article class="classroom-card is-idea" style="--card: {{ card.color ?: 'var(--classroom-accent, #b5411f)' }}">
+    <a class="classroom-card-cover" href="{{ path('classroom_card', {slug: card.slug}) }}">{% if card.image %}<img src="{{ card.image }}" alt="" loading="lazy">{% else %}<span class="classroom-card-blank" aria-hidden="true"></span>{% endif %}{% if card.icon %}<i class="{{ card.icon }} classroom-card-icon{{ card.image ? ' is-badge' }}" aria-hidden="true"></i>{% endif %}</a>
+    <div class="classroom-card-body">
+        <p class="classroom-card-pills">{% include '@Classroom/client/_pills.html.twig' with {thing: card} %}</p>
+        <h3><a href="{{ path('classroom_card', {slug: card.slug}) }}">{{ card.title }}</a></h3>
+        {% if card.headline %}<p class="classroom-card-line">{{ card.headline }}</p>{% endif %}
+    </div>
+</article>

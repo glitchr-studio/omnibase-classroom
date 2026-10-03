@@ -1,0 +1,54 @@
+{# A resource: its preview (picture, or the first rows of a spreadsheet), what it is, the download - or the offer. #}
+{% extends 'layout1.html.twig' %}
+{% block title %}{{ resource.title }}{% endblock %}
+{% block description %}{{ resource.description ?? '' }}{% endblock %}
+{% block stylesheets %}{{ parent() }}<link rel="stylesheet" href="{{ asset('bundles/classroom/css/classroom.css') }}"><link rel="stylesheet" href="{{ asset('bundles/marketplace/css/marketplace.css') }}"><link rel="stylesheet" href="{{ asset('bundles/marketplace/css/marketplace.css') }}">{% endblock %}
+
+{% block content %}
+<article class="classroom classroom-resource">
+    <header class="classroom-head"><div>
+        <p class="classroom-eyebrow"><a href="{{ path('classroom_resources') }}">{{ '@classroom.listing.resources'|trans }}</a></p>
+        <p class="classroom-card-pills">{% include '@Classroom/client/_pills.html.twig' with {thing: resource} %}<span class="classroom-pill is-small is-{{ resource.visibility.value }}">{{ ('@classroom.resource.visibility.' ~ resource.visibility.value)|trans }}</span></p>
+        <h1>{{ resource.title }}</h1>
+        {% if resource.description %}<p class="classroom-lead">{{ resource.description|nl2br }}</p>{% endif %}
+    </div></header>
+
+    {% for message in app.flashes('error') %}<p class="classroom-flash is-error">{{ message }}</p>{% endfor %}
+    {% for message in app.flashes('classroom') %}<p class="classroom-flash">{{ ('@classroom.' ~ message)|trans }}</p>{% endfor %}
+
+    <div class="classroom-resource-grid">
+        <div>
+            {% if resource.preview %}<figure class="classroom-cover"><img src="{{ resource.preview }}" alt=""></figure>{% endif %}
+            {% for sheet in sheets %}
+            <div class="classroom-sheet">
+                {% if sheets|length > 1 %}<h3>{{ sheet.name }}</h3>{% endif %}
+                <div class="classroom-sheet-scroll"><table>
+                    {% for row in sheet.rows %}<tr>{% for cell in row %}{% if loop.parent.loop.first %}<th>{{ cell }}</th>{% else %}<td>{{ cell }}</td>{% endif %}{% endfor %}</tr>{% endfor %}
+                </table></div>
+                {% if sheet.more %}<p class="classroom-sheet-more">{{ '@classroom.resource.more_rows'|trans }}</p>{% endif %}
+            </div>
+            {% endfor %}
+            {% if not resource.preview and not sheets %}<div class="classroom-cover is-blank"><span>{{ resource.extension|upper }}</span></div>{% endif %}
+        </div>
+        <aside class="classroom-frame">
+            <dl>
+                <dt>{{ '@classroom.resource.format'|trans }}</dt><dd>{{ resource.extension|upper }}{% if resource.size %} · {{ resource.size|classroom_size }}{% endif %}</dd>
+                <dt>{{ '@classroom.resource.downloads_label'|trans }}</dt><dd>{{ resource.downloads }}</dd>
+                {% if resource.sequences|length %}<dt>{{ '@classroom.resource.in_sequences'|trans }}</dt><dd>{% for s in resource.sequences %}<a href="{{ path('classroom_sequence', {slug: s.slug}) }}">{{ s.title }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</dd>{% endif %}
+            </dl>
+            {% if allowed and resource.hasFile %}
+            <a class="classroom-button" href="{{ path('classroom_download', {slug: resource.slug}) }}" data-transparent-ignore><i class="fa-solid fa-download" aria-hidden="true"></i> {{ '@classroom.resource.download'|trans }}</a>
+            {% elseif resource.paid %}
+                {% if offer and offer.forSell %}
+                <p class="classroom-price">{% include '@Marketplace/client/_price.html.twig' with {amount: offer.unitPrice, currency: offer.currency} %}</p>
+                {% include '@Marketplace/client/_quick_order.html.twig' with {product: offer} %}
+                {% else %}<p class="classroom-note">{{ '@classroom.resource.not_for_sale'|trans }}</p>{% endif %}
+            {% elseif not allowed %}
+            <p class="classroom-note">{{ '@classroom.resource.members_only'|trans({login: path('security_login'), register: path('security_register')})|raw }}</p>
+            {% else %}
+            <p class="classroom-note">{{ '@classroom.resource.no_file'|trans }}</p>
+            {% endif %}
+        </aside>
+    </div>
+</article>
+{% endblock %}
