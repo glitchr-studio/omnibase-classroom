@@ -85,3 +85,7 @@ link, shown after the payment and mailed to the buyer
 (`classroom.from_email` sets the sender) - lists the files, each behind a
 signed download link. A signed-in member buys in their own name and finds
 the file in their account as before.
+
+## License
+
+MIT since 2026-10-09; earlier versions remain published under LGPL-3.0-or-later.

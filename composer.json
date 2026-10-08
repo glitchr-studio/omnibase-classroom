@@ -2,7 +2,7 @@
     "name": "omnibase/classroom",
     "description": "A teacher's open classroom for omnibase: levels and subjects, learning sequences and their sessions, idea cards, resources to download (free, for members, or sold through omnibase/marketplace).",
     "type": "symfony-bundle",
-    "license": "LGPL-3.0-or-later",
+    "license": "MIT",
     "authors": [{"name": "Marco Meyer", "email": "marco.meyer@glitchr.io"}],
     "require": {
         "php": "^8.2",
